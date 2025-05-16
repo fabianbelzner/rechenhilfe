@@ -108,7 +108,12 @@ body.space-mode {
     body.space-mode h1 {
       color: white;
     }
-  </style>
+  
+body.classic-mode .bead {
+  border-radius: 50% !important;
+}
+
+</style>
 </head>
 <body>
   <h1 id="title">Rechenhilfe</h1>
@@ -207,7 +212,7 @@ body.space-mode {
 
     function applyTheme(theme) {
       currentTheme = theme;
-      document.body.className = theme + "-mode";
+      document.body.className = theme + "-mode"; document.body.classList.add("theme-applied");
       beads.forEach(bead => {
         const colorIndex = parseInt(bead.dataset.colorIndex);
         const color = colors[(colorIndex + colors.length) % colors.length];

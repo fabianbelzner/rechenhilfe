@@ -5,7 +5,10 @@ self.addEventListener('install', event => {
         './index.html',
         './manifest.json',
         './icon-192.png',
-        './icon-512.png'
+        './icon-512.png',
+        './sounds/tone-gray.mp3',
+        './sounds/tone-blue.mp3',
+        './sounds/tone-red.mp3'
       ]);
     })
   );

@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <!-- iOS-Spezifisch -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Abaco">
-<link rel="apple-touch-icon" href="icon-192.png">
   <meta charset="UTF-8">
-  <title>Abaco Simulator</title>
+  <title>Rechenhilfe</title>
   <meta name="theme-color" content="#444444">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Rechenhilfe">
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      padding: 40px;
+    html, body {
       margin: 0;
+      padding: 0;
       background: #f0f0f0;
+      font-family: sans-serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
     }
 
     .abaco {
       display: grid;
-      grid-template-columns: repeat(5, 50px) 30px repeat(5, 50px);
-      grid-template-rows: repeat(2, 50px);
-      gap: 8px;
+      grid-template-columns: repeat(5, 1fr) 30px repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 2vw;
+      width: 90vw;
+      max-width: 900px;
+      aspect-ratio: 10 / 2;
     }
 
     .bead {
-      width: 50px;
-      height: 50px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       background-color: gray;
       border: 2px solid #444;
@@ -40,14 +48,44 @@
 
     .spacer {
       width: 30px;
-      height: 50px;
+      height: 100%;
+    }
+
+    .controls {
+      margin: 10px;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 8px 16px;
+      border: none;
+      background-color: #444;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #666;
     }
   </style>
 </head>
 <body>
+  <h1>Rechenhilfe</h1>
+  <div class="controls">
+    <button onclick="resetBeads()">Zurücksetzen</button>
+  </div>
   <div class="abaco" id="abacoBoard"></div>
+
   <script>
     const colors = ["gray", "blue", "red"];
+    const sounds = {
+      "gray": new Audio("sounds/tone-gray.mp3"),
+      "blue": new Audio("sounds/tone-blue.mp3"),
+      "red": new Audio("sounds/tone-red.mp3")
+    };
+
+    let beads = [];
 
     function createBead(row, col) {
       const bead = document.createElement("div");
@@ -57,14 +95,21 @@
       bead.addEventListener("click", () => {
         let index = (parseInt(bead.dataset.colorIndex) + 1) % colors.length;
         bead.dataset.colorIndex = index;
-        bead.style.backgroundColor = colors[index];
+        const color = colors[index];
+        bead.style.backgroundColor = color;
+        sounds[color].currentTime = 0;
+        sounds[color].play();
       });
 
+      beads.push(bead);
       return bead;
     }
 
     function createAbaco(rows, colsPerGroup) {
       const board = document.getElementById("abacoBoard");
+      board.innerHTML = "";
+      beads = [];
+
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < colsPerGroup; col++) {
           board.appendChild(createBead(row, col));
@@ -78,6 +123,13 @@
           board.appendChild(createBead(row, col + colsPerGroup));
         }
       }
+    }
+
+    function resetBeads() {
+      beads.forEach(bead => {
+        bead.dataset.colorIndex = 0;
+        bead.style.backgroundColor = "gray";
+      });
     }
 
     createAbaco(2, 5);

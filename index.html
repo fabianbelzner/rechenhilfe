@@ -185,13 +185,23 @@ body.classic-mode .bead {
       return bead;
     }
 
+    
     function updateBeadStyle(bead, color) {
+      bead.classList.remove("minecraft", "space");
       if (currentTheme === "minecraft") {
-        bead.classList.remove("space");
         bead.classList.add("minecraft");
         bead.style.backgroundImage = "url(" + colorImages["minecraft"][color] + ")";
         bead.style.backgroundColor = "";
       } else if (currentTheme === "space") {
+        bead.classList.add("space");
+        bead.style.backgroundImage = "url(" + colorImages["space"][color] + ")";
+        bead.style.backgroundColor = "";
+      } else {
+        bead.style.backgroundImage = "";
+        bead.style.backgroundColor = color;
+      }
+    }
+} else if (currentTheme === "space") {
         bead.classList.remove("minecraft");
         bead.classList.add("space");
         bead.style.backgroundImage = "url(" + colorImages["space"][color] + ")";

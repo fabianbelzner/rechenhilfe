@@ -41,7 +41,14 @@
       background-color: gray;
       border: 2px solid #444;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .bead.minecraft {
+      border-radius: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
     .spacer {
@@ -51,6 +58,10 @@
 
     .controls {
       margin: 10px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     button {
@@ -66,24 +77,44 @@
     button:hover {
       background-color: #666;
     }
+
+    select {
+      padding: 6px;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
   <h1>Rechenhilfe</h1>
   <div class="controls">
     <button onclick="resetBeads()">Zurücksetzen</button>
+    <label>
+      Design:
+      <select id="themeSelector" onchange="applyTheme(this.value)">
+        <option value="classic">Klassisch</option>
+        <option value="minecraft">Minecraft</option>
+      </select>
+    </label>
   </div>
   <div class="abaco" id="abacoBoard"></div>
 
   <script>
     const colors = ["red", "blue", "gray"];
+    const colorImages = {
+      "red": "textures/redstone.png",
+      "blue": "textures/lapis.png",
+      "gray": "textures/stone.png"
+    };
+
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const soundFiles = {
-      "gray": "sounds/tone-gray.mp3",
+      "red": "sounds/tone-red.mp3",
       "blue": "sounds/tone-blue.mp3",
-      "red": "sounds/tone-red.mp3"
+      "gray": "sounds/tone-gray.mp3"
     };
     const buffers = {};
+    let beads = [];
+    let currentTheme = "classic";
 
     async function loadSound(color) {
       const response = await fetch(soundFiles[color]);
@@ -98,24 +129,42 @@
       source.start(0);
     }
 
-    let beads = [];
-
     function createBead(row, col) {
       const bead = document.createElement("div");
       bead.classList.add("bead");
       bead.dataset.colorIndex = -1;
-      
 
       bead.addEventListener("click", () => {
         let index = (parseInt(bead.dataset.colorIndex) + 1) % colors.length;
         bead.dataset.colorIndex = index;
         const color = colors[index];
-        bead.style.backgroundColor = color;
+        updateBeadStyle(bead, color);
         playSound(color);
       });
 
       beads.push(bead);
       return bead;
+    }
+
+    function updateBeadStyle(bead, color) {
+      if (currentTheme === "minecraft") {
+        bead.classList.add("minecraft");
+        bead.style.backgroundImage = "url(" + colorImages[color] + ")";
+        bead.style.backgroundColor = "";
+      } else {
+        bead.classList.remove("minecraft");
+        bead.style.backgroundColor = color;
+        bead.style.backgroundImage = "";
+      }
+    }
+
+    function applyTheme(theme) {
+      currentTheme = theme;
+      beads.forEach(bead => {
+        const colorIndex = parseInt(bead.dataset.colorIndex);
+        const color = colors[(colorIndex + colors.length) % colors.length];
+        updateBeadStyle(bead, color);
+      });
     }
 
     function createAbaco(rows, colsPerGroup) {
@@ -141,14 +190,14 @@
     function resetBeads() {
       beads.forEach(bead => {
         bead.dataset.colorIndex = -1;
-      
-        bead.style.backgroundColor = "gray";
+        updateBeadStyle(bead, "gray");
       });
     }
 
     async function init() {
       await Promise.all(colors.map(loadSound));
       createAbaco(2, 5);
+      applyTheme("classic");
     }
 
     init();

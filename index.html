@@ -77,11 +77,26 @@
 
   <script>
     const colors = ["gray", "blue", "red"];
-    const sounds = {
-      "gray": new Audio("sounds/tone-gray.mp3"),
-      "blue": new Audio("sounds/tone-blue.mp3"),
-      "red": new Audio("sounds/tone-red.mp3")
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const soundFiles = {
+      "gray": "sounds/tone-gray.mp3",
+      "blue": "sounds/tone-blue.mp3",
+      "red": "sounds/tone-red.mp3"
     };
+    const buffers = {};
+
+    async function loadSound(color) {
+      const response = await fetch(soundFiles[color]);
+      const arrayBuffer = await response.arrayBuffer();
+      buffers[color] = await audioContext.decodeAudioData(arrayBuffer);
+    }
+
+    function playSound(color) {
+      const source = audioContext.createBufferSource();
+      source.buffer = buffers[color];
+      source.connect(audioContext.destination);
+      source.start(0);
+    }
 
     let beads = [];
 
@@ -95,9 +110,7 @@
         bead.dataset.colorIndex = index;
         const color = colors[index];
         bead.style.backgroundColor = color;
-        sounds[color].currentTime = 0;
-        if (window.navigator.vibrate) window.navigator.vibrate(20);
-        sounds[color].play();
+        playSound(color);
       });
 
       beads.push(bead);
@@ -131,7 +144,12 @@
       });
     }
 
-    createAbaco(2, 5);
+    async function init() {
+      await Promise.all(colors.map(loadSound));
+      createAbaco(2, 5);
+    }
+
+    init();
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');

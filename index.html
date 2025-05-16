@@ -91,6 +91,7 @@
 
     body.space-mode {
   background: url("backgrounds/space.jpg") center center / cover no-repeat fixed;
+  min-height: 100vh;
       background: url("backgrounds/space.jpg") no-repeat center center fixed;
       background-size: cover;
       color: white;
@@ -173,8 +174,11 @@
 
     function updateBeadStyle(bead, color) {
       if (currentTheme === "minecraft" || currentTheme === "space") {
+        bead.classList.remove("minecraft", "space");
         bead.classList.add(currentTheme);
-        bead.style.backgroundImage = "url(" + colorImages[currentTheme][color] + ")";
+        if (colorImages[currentTheme] && colorImages[currentTheme][color]) {
+          bead.style.backgroundImage = "url(" + colorImages[currentTheme][color] + ")";
+        }
         bead.style.backgroundColor = "";
       } else {
         bead.classList.remove("minecraft", "space");

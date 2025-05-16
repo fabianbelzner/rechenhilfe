@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Rechenhilfe</title>
-  <meta name="theme-color" content="#222222">
+  <meta name="theme-color" content="#444444">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -22,11 +22,9 @@
       flex-direction: column;
       align-items: center;
     }
-
     h1 {
       margin: 16px 0 8px;
     }
-
     .abaco {
       display: grid;
       grid-template-columns: repeat(5, 1fr) 30px repeat(5, 1fr);
@@ -34,7 +32,6 @@
       width: 90vw;
       max-width: 900px;
     }
-
     .bead {
       width: 100%;
       aspect-ratio: 1;
@@ -42,21 +39,18 @@
       background-color: gray;
       border: 2px solid #444;
       cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
+      transition: background-color 0.2s;
     }
-
-    .bead.minecraft, .bead.space {
+    .bead.minecraft {
       border-radius: 0;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
     }
-
     .spacer {
       width: 30px;
       height: auto;
     }
-
     .controls {
       margin: 10px;
       display: flex;
@@ -64,7 +58,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
     button {
       font-size: 1rem;
       padding: 8px 16px;
@@ -74,49 +67,21 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #666;
     }
-
     select {
       padding: 6px;
       font-size: 1rem;
     }
-
     body.minecraft-mode, h1.minecraft-mode, button.minecraft-mode, select.minecraft-mode {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.8rem;
     }
-
-    
-body.space-mode {
-  background: url("backgrounds/space.jpg") no-repeat center center fixed;
-  background-size: 100vw 100vh;
-  color: white;
-  height: 100vh;
-  overflow: hidden;
-}
-
-  background: url("backgrounds/space.jpg") center center / cover no-repeat fixed;
-  min-height: 100vh;
-      background: url("backgrounds/space.jpg") no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-    }
-
-    body.space-mode h1 {
-      color: white;
-    }
-  
-body.classic-mode .bead {
-  border-radius: 50%;
-}
-
-</style>
+  </style>
 </head>
 <body>
-  <h1 id="title">Rechenhilfe</h1>
+  <h1>Rechenhilfe</h1>
   <div class="controls">
     <button onclick="resetBeads()">Zurücksetzen</button>
     <label>
@@ -124,12 +89,10 @@ body.classic-mode .bead {
       <select id="themeSelector" onchange="applyTheme(this.value)">
         <option value="classic">Klassisch</option>
         <option value="minecraft">Minecraft</option>
-        <option value="space">Weltraum</option>
       </select>
     </label>
   </div>
   <div class="abaco" id="abacoBoard"></div>
-
   <script>
     const colors = ["red", "blue", "gray"];
     const colorImages = {
@@ -137,14 +100,8 @@ body.classic-mode .bead {
         "red": "textures/redstone.png",
         "blue": "textures/lapis.png",
         "gray": "textures/stone.png"
-      },
-      "space": {
-        "red": "textures/space_red.png",
-        "blue": "textures/space_blue.png",
-        "gray": "textures/space_gray.png"
       }
     };
-
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const soundFiles = {
       "red": "sounds/tone-red.mp3",
@@ -154,25 +111,21 @@ body.classic-mode .bead {
     const buffers = {};
     let beads = [];
     let currentTheme = "classic";
-
     async function loadSound(color) {
       const response = await fetch(soundFiles[color]);
       const arrayBuffer = await response.arrayBuffer();
       buffers[color] = await audioContext.decodeAudioData(arrayBuffer);
     }
-
     function playSound(color) {
       const source = audioContext.createBufferSource();
       source.buffer = buffers[color];
       source.connect(audioContext.destination);
       source.start(0);
     }
-
     function createBead(row, col) {
       const bead = document.createElement("div");
       bead.classList.add("bead");
       bead.dataset.colorIndex = -1;
-
       bead.addEventListener("click", () => {
         let index = (parseInt(bead.dataset.colorIndex) + 1) % colors.length;
         bead.dataset.colorIndex = index;
@@ -180,97 +133,61 @@ body.classic-mode .bead {
         updateBeadStyle(bead, color);
         playSound(color);
       });
-
       beads.push(bead);
       return bead;
     }
-
-    
     function updateBeadStyle(bead, color) {
-      bead.classList.remove("minecraft", "space");
+      bead.classList.remove("minecraft");
       if (currentTheme === "minecraft") {
         bead.classList.add("minecraft");
         bead.style.backgroundImage = "url(" + colorImages["minecraft"][color] + ")";
         bead.style.backgroundColor = "";
-      } else if (currentTheme === "space") {
-        bead.classList.add("space");
-        bead.style.backgroundImage = "url(" + colorImages["space"][color] + ")";
-        bead.style.backgroundColor = "";
       } else {
         bead.style.backgroundImage = "";
         bead.style.backgroundColor = color;
       }
     }
-} else if (currentTheme === "space") {
-        bead.classList.remove("minecraft");
-        bead.classList.add("space");
-        bead.style.backgroundImage = "url(" + colorImages["space"][color] + ")";
-        bead.style.backgroundColor = "";
-      } else {
-        bead.classList.remove("minecraft", "space");
-        bead.classList.add(currentTheme);
-        if (colorImages[currentTheme] && colorImages[currentTheme][color]) {
-          bead.style.backgroundImage = "url(" + colorImages[currentTheme][color] + ")";
-        }
-        bead.style.backgroundColor = "";
-      } else {
-        bead.classList.remove("minecraft", "space");
-        bead.style.backgroundColor = color;
-        bead.style.backgroundImage = "";
-      }
-    }
-
     function applyTheme(theme) {
       currentTheme = theme;
-      document.body.className = theme + "-mode"; document.body.classList.add("theme-applied");
+      document.body.className = theme + "-mode";
       beads.forEach(bead => {
         const colorIndex = parseInt(bead.dataset.colorIndex);
         const color = colors[(colorIndex + colors.length) % colors.length];
         updateBeadStyle(bead, color);
       });
     }
-
     function createAbaco(rows, colsPerGroup) {
       const board = document.getElementById("abacoBoard");
       board.innerHTML = "";
       beads = [];
-
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < colsPerGroup; col++) {
           board.appendChild(createBead(row, col));
         }
-
         const spacer = document.createElement("div");
         spacer.classList.add("spacer");
         board.appendChild(spacer);
-
         for (let col = 0; col < colsPerGroup; col++) {
           board.appendChild(createBead(row, col + colsPerGroup));
         }
       }
     }
-
     function resetBeads() {
       beads.forEach(bead => {
         bead.dataset.colorIndex = -1;
         updateBeadStyle(bead, "gray");
       });
     }
-
     async function init() {
       await Promise.all(colors.map(loadSound));
       createAbaco(2, 5);
       applyTheme("classic");
     }
-
-    // iOS AudioContext aktivieren
     document.body.addEventListener('click', function initAudio() {
       audioContext.resume();
       document.body.removeEventListener('click', initAudio);
     });
-
     init();
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }

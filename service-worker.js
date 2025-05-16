@@ -9,7 +9,10 @@ self.addEventListener('install', event => {
         './icon-512.png',
         './sounds/tone-gray.mp3',
         './sounds/tone-blue.mp3',
-        './sounds/tone-red.mp3'
+        './sounds/tone-red.mp3',
+        './textures/redstone.png',
+        './textures/lapis.png',
+        './textures/stone.png'
       ]);
     })
   );

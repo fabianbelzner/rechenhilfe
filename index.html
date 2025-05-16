@@ -103,7 +103,8 @@
     function createBead(row, col) {
       const bead = document.createElement("div");
       bead.classList.add("bead");
-      bead.dataset.colorIndex = 0;
+      bead.dataset.colorIndex = -1;
+      
 
       bead.addEventListener("click", () => {
         let index = (parseInt(bead.dataset.colorIndex) + 1) % colors.length;
@@ -139,7 +140,8 @@
 
     function resetBeads() {
       beads.forEach(bead => {
-        bead.dataset.colorIndex = 0;
+        bead.dataset.colorIndex = -1;
+      
         bead.style.backgroundColor = "gray";
       });
     }

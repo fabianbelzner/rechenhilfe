@@ -2,18 +2,23 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Rechenhilfe Simulator</title>
+  <title>Abaco Simulator</title>
+  <meta name="theme-color" content="#444444">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: sans-serif;
       display: flex;
       justify-content: center;
       padding: 40px;
+      margin: 0;
+      background: #f0f0f0;
     }
 
     .abaco {
       display: grid;
-      grid-template-columns: repeat(5, 50px) 30px repeat(5, 50px); /* Trennspalte */
+      grid-template-columns: repeat(5, 50px) 30px repeat(5, 50px);
       grid-template-rows: repeat(2, 50px);
       gap: 8px;
     }
@@ -29,7 +34,6 @@
     }
 
     .spacer {
-      /* Leeres Feld für Abstand */
       width: 30px;
       height: 50px;
     }
@@ -37,9 +41,8 @@
 </head>
 <body>
   <div class="abaco" id="abacoBoard"></div>
-
   <script>
-    const colors = ["gray", "red", "blue"]; // Startfarbe grau
+    const colors = ["gray", "blue", "red"];
 
     function createBead(row, col) {
       const bead = document.createElement("div");
@@ -62,7 +65,6 @@
           board.appendChild(createBead(row, col));
         }
 
-        // Spacer in der Mitte
         const spacer = document.createElement("div");
         spacer.classList.add("spacer");
         board.appendChild(spacer);
@@ -73,7 +75,11 @@
       }
     }
 
-    createAbaco(2, 5); // 2 Reihen, 5 Kugeln links/rechts
+    createAbaco(2, 5);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
   </script>
 </body>
 </html>

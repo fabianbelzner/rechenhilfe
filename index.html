@@ -83,6 +83,13 @@
       font-size: 1rem;
     }
   </style>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+body.minecraft-mode, h1.minecraft-mode, button.minecraft-mode, select.minecraft-mode {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+}
+</style>
 </head>
 <body>
   <h1>Rechenhilfe</h1>
@@ -160,6 +167,7 @@
 
     function applyTheme(theme) {
       currentTheme = theme;
+  document.body.className = theme + "-mode";
       beads.forEach(bead => {
         const colorIndex = parseInt(bead.dataset.colorIndex);
         const color = colors[(colorIndex + colors.length) % colors.length];
@@ -206,5 +214,12 @@
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
+<script>
+// iOS AudioContext freischalten
+document.body.addEventListener('click', function initAudio() {
+  audioContext.resume();
+  document.body.removeEventListener('click', initAudio);
+});
+</script>
 </body>
 </html>

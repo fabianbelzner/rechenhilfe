@@ -96,6 +96,7 @@
         const color = colors[index];
         bead.style.backgroundColor = color;
         sounds[color].currentTime = 0;
+        if (window.navigator.vibrate) window.navigator.vibrate(20);
         sounds[color].play();
       });
 
